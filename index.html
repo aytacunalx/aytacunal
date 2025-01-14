@@ -11,6 +11,20 @@
 		<link rel="stylesheet" href="assets/css/overlay.css" />
 		<link rel="shortcut icon" type="image/png" href="assets/css/images/ico.png"/>
 		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+
+		<script>
+        async function fetchIP() {
+            try {
+                // Bir IP API'sinden kullanıcının IP adresini al
+                const response = await fetch('https://api.ipify.org?format=json');
+                const data = await response.json();
+                document.getElementById('ip-display').innerText = `IP Adresiniz: ${data.ip}`;
+            } catch (error) {
+                document.getElementById('ip-display').innerText = 'IP adresi alınamadı.';
+            }
+        }
+    </script>
+		
 	</head>
 	<body class="is-preload">
 		
@@ -35,6 +49,13 @@
 						<br>
 						<br>
 						<br>
+						<div id="ip-container" onload="fetchIP()">
+       							 <p id="ip-display">IP adresiniz yükleniyor...</p>
+   						 </div>
+    						<script>
+        					// Div'in içeriğini yüklemek için fetchIP fonksiyonunu manuel olarak çağırıyoruz
+       								 fetchIP();
+    						</script>
 						
 						<a href="assets/css/images/Screenshot_8.png" class="button" download data-text="İndir">
         						<span class="actual-text">&nbsp;WIAXOMAKRO&nbsp;</span>
