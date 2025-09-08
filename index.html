@@ -52,7 +52,7 @@
       max-width: 920px; width: 100%;
       background: rgb(255, 241, 224);
       padding: 2rem 2.2rem;
-      border-radius: 18px;
+      border-radius: 3px;
       opacity: 0; transform: translateY(24px);
       transition: all .8s ease;
       backdrop-filter: blur(2px);
@@ -108,7 +108,7 @@
 
     .single-line-item .item-header{ align-items:center; }
 
-    footer{ margin-top: 3rem; padding: 1.6rem 1rem; color:#000000; border-radius: 0 0 18px 18px; text-align:center; }
+    footer{ margin-top: 3rem; margin-bottom: 100px; padding: 1.6rem 1rem; color:#000000; border-radius: 0 0 18px 18px; text-align:center; }
     .footer-logo img{ width:170px; margin-bottom:.6rem; filter: drop-shadow(0 0 10px rgba(255,200,120,.5)); }
     .footer-info div{ margin-bottom:.35rem; }
 
@@ -238,6 +238,31 @@
 }
 
 
+.footer-social {
+  margin-top: 1.2rem;
+}
+
+.footer-social a {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: #E4405F; /* Instagram rengi */
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.footer-social a img {
+  width: 28px;
+  height: 28px;
+  filter: drop-shadow(0 0 6px rgba(228, 64, 95, 0.4));
+  transition: transform 0.3s ease;
+}
+
+.footer-social a:hover img {
+  transform: scale(1.15);
+}
+
   </style>
 </head>
 <body>
@@ -356,6 +381,14 @@
             <a href="tel:+905313709574" class="phone-link">+90 531 370 95 74</a>
         </p>
       </div>
+
+      <!-- Instagram Alanı -->
+  <div class="footer-social">
+    <a href="https://www.instagram.com/tavuklu.tr" target="_blank" class="instagram-link">
+      <img src="instagram.png" alt="Instagram" />
+      <span>@tavuklu.tr</span>
+    </a>
+  </div>
     </footer>
   </div>
 
