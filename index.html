@@ -9,261 +9,435 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
+    :root{
+      --turuncu-1:#FF8A00;
+      --turuncu-2:#FF6A00;
+      --turuncu-3:#FFC107;
+      --bg-light:#FFF7EF;
+      --text:#3d3d3d;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+
     body {
       font-family: 'Poppins', sans-serif;
-      background-color: #ff9c2a; 
-      color: #3d3d3d;
+      color: var(--text);
       padding: 2rem;
       display: flex;
       justify-content: center;
       align-items: flex-start;
+      background: #ff9c2a;
+      background-attachment: fixed;
+      background-size: 140% 140%;
+      animation: bgShift 12s ease-in-out infinite alternate;
     }
+    @keyframes bgShift{
+      0%{background-position: 0% 0%}
+      100%{background-position: 100% 100%}
+    }
+
+    #loading {
+      position: fixed; inset:0;
+      background: linear-gradient(135deg, var(--turuncu-1), var(--turuncu-2));
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      z-index: 9999;
+    }
+    #loading img { width: 280px; animation: skate 0.5s infinite alternate ease-in-out; }
+    @keyframes skate { 0% { transform: translateX(-10px) rotate(-2deg); } 100% { transform: translateX(10px) rotate(2deg); } }
+    #loading p { margin-top: 18px; font-size: 1.1rem; font-weight: 800; color: #fff; letter-spacing: .5px; text-shadow: 0 0 8px #FFD54F, 0 0 14px rgba(255,255,255,.6); animation: neonBlink 1.6s infinite; }
+    @keyframes neonBlink{0%,19%,21%,23%,80%,100%{opacity:1} 20%,22%{opacity:.3} 81%{opacity:.6}}
 
     .menu-container {
-      max-width: 800px;
-      width: 100%;
-      background: #ffffff;
-      padding: 2rem 2.5rem;
-      border-radius: 20px;
-      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+      max-width: 920px; width: 100%;
+      background: rgb(255, 241, 224);
+      padding: 2rem 2.2rem;
+      border-radius: 18px;
+      opacity: 0; transform: translateY(24px);
+      transition: all .8s ease;
+      backdrop-filter: blur(2px);
     }
+    .menu-container.show{ opacity:1; transform: translateY(0); }
 
-    .logo-container {
-      text-align: center;
-      margin-bottom: 2rem;
-    }
-
-    .logo-container img {
-      width: 280px;
-    }
+    .logo-container { text-align:center; margin-bottom: 1.4rem; }
+    .logo-container img { width: 280px;}
 
     h2 {
-      font-size: 2.2rem; /* Daha büyük ve dikkat çekici başlıklar */
-      font-weight: 800; /* Daha kalın font */
+      font-size: 2rem; font-weight: 900; text-align:center;
+      color: var(--turuncu-1);
+      padding-bottom: .8rem; margin-top: 2.6rem; margin-bottom: 1.6rem;
+      position: relative; overflow: visible;
+      border-bottom: 3px dashed rgba(255,122,0,.35);
+    }
+    h2 span { display:inline-block; opacity:0; transform: translateY(8px); transition: all .5s ease; }
+    h2 img { position:absolute; left:-110px; top:50%; transform: translateY(-50%); width:80px; z-index:2; }
+    h2.show img { animation: chicken-smooth 2.2s cubic-bezier(.25,1.25,.5,1) forwards; }
+    @keyframes chicken-smooth{0%{left:-110px; transform: translateY(-50%) scale(1)} 70%{left:85%; transform: translateY(-55%) scale(1.06)} 100%{left:85%; transform: translateY(-40%) scale(.9)} }
+    h2.show span { opacity:1; transform: translateY(0); transition-delay: .25s; }
+
+    .item{ position:relative; margin-bottom: 1.4rem; padding: .9rem 1rem; border-radius: 14px; background: var(--bg-light);
+      box-shadow: 0 2px 10px rgba(0,0,0,.05);
+      border: 2px solid rgba(255,138,0,.12);
+      overflow:hidden;
+      opacity:0; transform: translateY(20px);
+    }
+    .item::before{
+      content:""; position:absolute; inset:-2px; border-radius: 16px;
+      background: radial-gradient(120px 60px at 10% 0%, rgba(255,200,120,.45), transparent 60%),
+                  radial-gradient(120px 60px at 90% 100%, rgba(255,120,0,.35), transparent 60%);
+      pointer-events:none; opacity:.0; transition: opacity .25s ease;
+    }
+    .item:hover{ transform: translateY(-2px) scale(1.01); box-shadow: 0 10px 24px rgba(255,138,0,.22); border-color: rgba(255,138,0,.35); }
+    .item:hover::before{ opacity:.9 }
+    .item.visible{ opacity:1; transform: translateY(0); }
+
+    .item-header{ display:flex; justify-content: space-between; align-items:center; gap:.8rem;}
+    .item-title{ font-weight:800; font-size:1.14rem; color:#FF7A00; letter-spacing:.2px; }
+
+    .item-price{ font-size:1.08rem; font-weight:900; color:#fff; background: linear-gradient(135deg, var(--turuncu-1), var(--turuncu-2));
+      padding: .35rem .8rem; border-radius: 999px; white-space:nowrap; margin-left:auto;
+      box-shadow: 0 0 10px rgba(255,165,0,.7), 0 0 20px rgba(255,165,0,.55);
+      transform: rotate(-2deg);
+    }
+
+    .item-desc{ font-size:.95rem; color:#5b5b5b; margin-top:.35rem; max-width: 90%; }
+
+    .image-container{ margin-top:1.4rem; border-radius:16px; overflow:hidden; box-shadow: 0 12px 28px rgba(0,0,0,.12); }
+    .image-container img{ width:100%; display:block; transition: transform .5s ease; }
+    .image-container:hover img{ transform: scale(1.04); }
+
+    .single-line-item .item-header{ align-items:center; }
+
+    footer{ margin-top: 3rem; padding: 1.6rem 1rem; color:#000000; border-radius: 0 0 18px 18px; text-align:center; }
+    .footer-logo img{ width:170px; margin-bottom:.6rem; filter: drop-shadow(0 0 10px rgba(255,200,120,.5)); }
+    .footer-info div{ margin-bottom:.35rem; }
+
+    /* 🔥 Özel Kutu Tasarımı */
+    .special-box {
+      background: linear-gradient(135deg, #FF8A00, #FF3D00);
+      color: #fff;
+      border-radius: 16px;
+      padding: 1.2rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 0 15px rgba(0,0,0,.2);
       text-align: center;
-      color: #ffae00;
-      border-bottom: 4px solid #ff9c2a;
-      padding-bottom: 0.8rem;
-      margin-top: 3rem;
-      margin-bottom: 2rem;
+    }
+    .special-box .title {
+      font-size: 1.4rem;
+      font-weight: 900;
+      margin-bottom: .8rem;
+    }
+    .special-box .content {
+      font-size: 1.1rem;
+      font-weight: 600;
     }
 
-    .item {
-      margin-bottom: 1.8rem;
-      padding: 0.5rem;
-      border-radius: 8px;
-      transition: background-color 0.2s ease-in-out;
-    }
-    
-    .item:hover {
-        background-color: #fff8f0; /* Üzerine gelince hafif renk değişimi */
+    .phone-link {
+    text-decoration: none;
+    color: inherit;
+    font-weight: bold;
     }
 
-    .item-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+    .phone-link:hover {
+    color: #ff5e00;
+    cursor: pointer;
     }
 
-    .item-title {
-      font-weight: 700;
-      font-size: 1.2rem;
-      color: #ffae00;
-    }
-    
-    .item-price {
-        font-size: 1.2rem;
-        font-weight: 700;
-        /* Fiyatlar için canlı ve dikkat çekici renk */
-        color: #F77E2E; 
-        background-color: #fff0e1;
-        padding: 0.2rem 0.6rem;
-        border-radius: 8px;
-        white-space: nowrap;
-        margin-left: 1rem;
+    @media (max-width: 560px){
+      body{ padding: 1rem; }
+      .menu-container{ padding: 1.2rem }
+      h2{ font-size: 1.7rem }
+      h2 img{ left:-86px; width:64px }
     }
 
-    .item-desc {
-      font-size: 0.95rem;
-      color: #585858;
-      margin-top: 0.4rem;
-      max-width: 90%;
-    }
 
-    .image-container {
-      margin-top: 2rem;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-    }
+    #menu-btn {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #FF8A00, #FF3D00);
+  color: #fff;
+  font-size: 1.6rem;
+  border: none;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+  cursor: pointer;
+  z-index: 10001;
+}
 
-    .image-container img {
-      width: 100%;
-      height: auto;
-      display: block;
-    }
-    
-    .single-line-item .item-header {
-        align-items: center;
-    }
+#fullscreen-menu {
+  position: fixed;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.98);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  z-index: 10000;
+}
 
-    footer {
-      margin-top: 4rem;
-      padding-top: 2rem;
-      border-top: 1px solid #eee;
-      text-align: center;
-      color: #6c757d;
-      font-size: 0.9rem;
-    }
-    
-    .footer-logo img {
-      width: 180px;
-      margin-bottom: 1rem;
-    }
+#fullscreen-menu.active {
+  display: flex;
+  animation: fadeIn .4s ease forwards;
+}
 
-    .footer-info div {
-        margin-bottom: 0.5rem;
-    }
+#fullscreen-menu .menu-content ul {
+  list-style: none;
+  padding: 0;
+  text-align: center;
+}
 
-    .footer-info .phone {
-        font-weight: 600;
-        font-size: 1.1rem;
-        color: #333;
-    }
+#fullscreen-menu .menu-content ul li {
+  margin: 1.2rem 0;
+}
+
+#fullscreen-menu .menu-content ul li a {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #FF6A00;
+  text-decoration: none;
+}
+
+#fullscreen-menu .menu-content ul li a:hover {
+  color: #FF3D00;
+}
+
+.close-btn {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  font-size: 2.5rem;
+  cursor: pointer;
+  color: #FF6A00;
+}
+
+.menu-logo {
+  width: 100%;
+  text-align: center;
+  margin-bottom: 2rem;
+  margin-top: 3rem;
+}
+
+
+  .menu-logo img {
+  width: 200px;
+  max-width: 70%;
+  display: inline-block;
+}
+
+#fullscreen-menu.active + #menu-btn {
+  display: none;
+}
+
+@keyframes fadeIn {
+  from {opacity: 0;}
+  to {opacity: 1;}
+}
+
 
   </style>
 </head>
 <body>
+
+  <div id="loading">
+    <img src="tavuklutavuk.png" alt="Yükleniyor">
+    <p>Acıktıysan... tavuklu ye!</p>
+  </div>
+
+  <button id="menu-btn">☰</button>
+
+<div id="fullscreen-menu">
+  <div class="menu-content">
+    <span class="close-btn">&times;</span>
+    <div class="menu-logo">
+      <img src="tavuklu.png" alt="Logo">
+    </div>
+    <ul>
+      <li><a href="#ekmek">🥪 Ekmek Arası</a></li>
+      <li><a href="#tabak">🍽️ Tabak</a></li>
+      <li><a href="#burger">🍔 Burger</a></li>
+      <li><a href="#aperatif">🍟 Aperatifler</a></li>
+      <li><a href="#icecek">🥤 İçecekler</a></li>
+    </ul>
+  </div>
+</div>
+
+
+
+
 
   <div class="menu-container">
     <div class="logo-container">
       <img src="tavuklu.png" alt="Tavuklu Logo">
     </div>
 
-    <h2>EKMEK ARASI</h2>
-    <div class="item">
-      <div class="item-header"><span class="item-title">Tavuklu Teriyaki</span><span class="item-price">120₺</span></div>
-      <div class="item-desc">Teriyaki soslu tavuk, marul, domates, turşu, karamelize soğan, pide ekmeği</div>
-    </div>
-    <div class="item">
-      <div class="item-header"><span class="item-title">Tavuklu Barbekü</span><span class="item-price">120₺</span></div>
-      <div class="item-desc">Barbekü soslu tavuk, marul, domates, turşu, karamelize soğan, pide ekmeği</div>
-    </div>
-    <div class="item">
-      <div class="item-header"><span class="item-title">Tavuklu Soya</span><span class="item-price">120₺</span></div>
-      <div class="item-desc">Soya soslu tavuk, marul, domates, turşu, karamelize soğan, pide ekmeği</div>
-    </div>
-    <div class="item">
-      <div class="item-header"><span class="item-title">Tavuklu Köri</span><span class="item-price">120₺</span></div>
-      <div class="item-desc">Köri soslu tavuk, marul, domates, turşu, karamelize soğan, pide ekmeği</div>
-    </div>
-    <div class="item">
-      <div class="item-header"><span class="item-title">Tavuklu Acılı 🔥</span><span class="item-price">120₺</span></div>
-      <div class="item-desc">Acı soslu tavuk, marul, domates, turşu, karamelize soğan, pide ekmeği</div>
-    </div>
-    <div class="item">
-      <div class="item-header"><span class="item-title">Tavuklu Çıtır</span><span class="item-price">120₺</span></div>
-      <div class="item-desc">Çıtır tavuk, marul, domates, turşu, karamelize soğan, pide ekmeği</div>
-    </div>
-    <div class="item">
-      <div class="item-header"><span class="item-title">Tavuklu Klasik</span><span class="item-price">120₺</span></div>
-      <div class="item-desc">Sade özel marinasyonlu tavuk, marul, domates, turşu, karamelize soğan, pide ekmeği</div>
-    </div>
-    <div class="item">
-      <div class="item-header"><span class="item-title">Tavuklu Tatlı Ekşi</span><span class="item-price">120₺</span></div>
-      <div class="item-desc">Tatlı ekşi soslu tavuk, marul, domates, turşu, karamelize soğan, pide ekmeği</div>
-    </div>
-    <div class="item">
-      <div class="item-header"><span class="item-title">Tavuklu Mexican</span><span class="item-price">120₺</span></div>
-      <div class="item-desc">Mexican soslu tavuk, marul, domates, turşu, karamelize soğan, pide ekmeği</div>
-    </div>
+    <!-- EN ÇOK TERCIH EDILENLER -->
+    <h2><span>⭐ EN ÇOK TERCİH EDİLENLER</span></h2>
+    <div class="item"><div class="item-header"><span class="item-title">Tavuklu Ekmek Arası Köri</span><span class="item-price">120₺</span></div></div>
+    <div class="item"><div class="item-header"><span class="item-title">Tavuklu Tabak Köri</span><span class="item-price">200₺</span></div></div>
+    <div class="item"><div class="item-header"><span class="item-title">Çıtır Tavuklu Tabağı</span><span class="item-price">140₺</span></div></div>
 
-    <div class="image-container"><img src="ekmek.webp" alt="Ekmek Arası"></div>
+    <!-- BUGÜN NE YESEN -->
+    <h2><img src="tavuklutavuk.png"><span>🍴BUGÜN NE YESEN?</span></h2>
+    <div class="item" id="randomMenu">
+      <div class="item-header"><span class="item-title">Yükleniyor...</span></div>
+    </div>
+    
 
-    <h2>TABAK</h2>
-    <div class="item">
-      <div class="item-header"><span class="item-title">Tavuklu Tabak Teriyaki</span><span class="item-price">200₺</span></div>
-      <div class="item-desc">Teriyaki soslu tavuk, kremalı pesto soslu makarna ve salata</div>
-    </div>
-    <div class="item">
-      <div class="item-header"><span class="item-title">Tavuklu Tabak Barbekü</span><span class="item-price">200₺</span></div>
-      <div class="item-desc">Barbekü soslu tavuk, kremalı pesto soslu makarna ve salata</div>
-    </div>
-    <div class="item">
-      <div class="item-header"><span class="item-title">Tavuklu Tabak Soya</span><span class="item-price">200₺</span></div>
-      <div class="item-desc">Soya soslu tavuk, kremalı pesto soslu makarna ve salata</div>
-    </div>
-    <div class="item">
-      <div class="item-header"><span class="item-title">Tavuklu Tabak Köri</span><span class="item-price">200₺</span></div>
-      <div class="item-desc">Köri soslu tavuk, kremalı pesto soslu makarna ve salata</div>
-    </div>
-    <div class="item">
-      <div class="item-header"><span class="item-title">Tavuklu Tabak Acılı 🔥</span><span class="item-price">200₺</span></div>
-      <div class="item-desc">Acı soslu tavuk, kremalı pesto soslu makarna ve salata</div>
-    </div>
-    <div class="item">
-      <div class="item-header"><span class="item-title">Tavuklu Tabak Klasik</span><span class="item-price">200₺</span></div>
-      <div class="item-desc">Sade özel marinasyonlu tavuk, kremalı pesto soslu makarna ve salata</div>
-    </div>
-    <div class="item">
-      <div class="item-header"><span class="item-title">Tavuklu Tabak Tatlı Ekşi</span><span class="item-price">200₺</span></div>
-      <div class="item-desc">Tatlı Ekşi soslu tavuk, kremalı pesto soslu makarna ve salata</div>
-    </div>
-    <div class="item">
-      <div class="item-header"><span class="item-title">Tavuklu Tabak Mexican</span><span class="item-price">200₺</span></div>
-      <div class="item-desc">Mexican soslu tavuk, kremalı pesto soslu makarna ve salata</div>
-    </div>
-  
-    <div class="image-container"><img src="tabak.webp" alt="Tabak Tavuklu"></div>
+    <!-- EKMEK ARASI -->
+    <h2 id="ekmek"><img src="tavuklutavuk.png"><span>EKMEK ARASI</span></h2>
+    <div class="image-container"><img src="ekmek.webp" alt="Ekmek Arası"></div>&nbsp;
+    <div class="item"><div class="item-header"><span class="item-title">Tavuklu Teriyaki</span><span class="item-price">120₺</span></div><div class="item-desc">Teriyaki soslu tavuk, marul, domates, turşu, karamelize soğan, pide ekmeği</div></div>
+    <div class="item"><div class="item-header"><span class="item-title">Tavuklu Barbekü</span><span class="item-price">120₺</span></div><div class="item-desc">Barbekü soslu tavuk, marul, domates, turşu, karamelize soğan, pide ekmeği</div></div>
+    <div class="item"><div class="item-header"><span class="item-title">Tavuklu Soya</span><span class="item-price">120₺</span></div><div class="item-desc">Soya soslu tavuk, marul, domates, turşu, karamelize soğan, pide ekmeği</div></div>
+    <div class="item"><div class="item-header"><span class="item-title">Tavuklu Köri</span><span class="item-price">120₺</span></div><div class="item-desc">Köri soslu tavuk, marul, domates, turşu, karamelize soğan, pide ekmeği</div></div>
+    <div class="item"><div class="item-header"><span class="item-title">Tavuklu Acılı 🔥</span><span class="item-price">120₺</span></div><div class="item-desc">Acı soslu tavuk, marul, domates, turşu, karamelize soğan, pide ekmeği</div></div>
+    <div class="item"><div class="item-header"><span class="item-title">Tavuklu Çıtır</span><span class="item-price">120₺</span></div><div class="item-desc">Çıtır tavuk, marul, domates, turşu, karamelize soğan, pide ekmeği</div></div>
+    <div class="item"><div class="item-header"><span class="item-title">Tavuklu Klasik</span><span class="item-price">120₺</span></div><div class="item-desc">Sade özel marinasyonlu tavuk, marul, domates, turşu, karamelize soğan, pide ekmeği</div></div>
+    <div class="item"><div class="item-header"><span class="item-title">Tavuklu Tatlı Ekşi</span><span class="item-price">120₺</span></div><div class="item-desc">Tatlı ekşi soslu tavuk, marul, domates, turşu, karamelize soğan, pide ekmeği</div></div>
+    <div class="item"><div class="item-header"><span class="item-title">Tavuklu Mexican</span><span class="item-price">120₺</span></div><div class="item-desc">Mexican soslu tavuk, marul, domates, turşu, karamelize soğan, pide ekmeği</div></div>
+    <div class="item"><div class="item-header"><span class="item-title">Tavuklu Ballı Hardal</span><span class="item-price">120₺</span></div><div class="item-desc">Ballı Hardal soslu tavuk, marul, domates, turşu, karamelize soğan, pide ekmeği</div></div>
+    <div class="item"><div class="item-header"><span class="item-title">Tavuklu Sweet Chili</span><span class="item-price">120₺</span></div><div class="item-desc">Sweet Chili soslu tavuk, marul, domates, turşu, karamelize soğan, pide ekmeği</div></div>
 
-    <h2>BURGER</h2>
-    <div class="item">
-        <div class="item-header"><span class="item-title">Tavuklu Burger</span><span class="item-price">200₺</span></div>
-        <div class="item-desc">Tavuklu burger, marul, domates, karamelize soğan, turşu, burger sos ve barbekü sos</div>
-    </div>
-    <div class="item">
-        <div class="item-header"><span class="item-title">Tavuklu Cheddar Burger</span><span class="item-price">220₺</span></div>
-        <div class="item-desc">Tavuklu burger, marul, domates, karamelize soğan, turşu, burger sos, barbekü sos ve cheddar sosu</div>
-    </div>
-    <div class="item">
-        <div class="item-header"><span class="item-title">Tavuklu Trüflü Mayonezli Burger</span><span class="item-price">220₺</span></div>
-        <div class="item-desc">Tavuklu burger, marul, domates, karamelize soğan, turşu ve trüflü mayonez</div>
-    </div>
-    <div class="image-container"><img src="burger2.webp" alt="Burger"></div>
 
-    <h2>APERATİFLER</h2>
-    <div class="item">
-        <div class="item-header"><span class="item-title">Çıtır Tavuk Tabağı</span><span class="item-price">140₺</span></div>
-        <div class="item-desc">100 gram çıtır tavuk ve patates kızartması</div>
-    </div>
-    <div class="item single-line-item">
-        <div class="item-header"><span class="item-title">Patates Kızartması</span><span class="item-price">70₺</span></div>
-    </div>
-    <div class="image-container"><img src="citir.webp" alt="Çıtır Tabak"></div>
+    <!-- TABAK -->
+    <h2 id="tabak"><img src="tavuklutavuk.png"><span>TABAK</span></h2>
+    <div class="image-container"><img src="tabak2.webp" alt="Tabak Tavuklu"></div>&nbsp;
+    <div class="item"><div class="item-header"><span class="item-title">Tavuklu Tabak Teriyaki</span><span class="item-price">200₺</span></div><div class="item-desc">Teriyaki soslu tavuk, kremalı pesto soslu makarna ve salata</div></div>
+    <div class="item"><div class="item-header"><span class="item-title">Tavuklu Tabak Barbekü</span><span class="item-price">200₺</span></div><div class="item-desc">Barbekü soslu tavuk, kremalı pesto soslu makarna ve salata</div></div>
+    <div class="item"><div class="item-header"><span class="item-title">Tavuklu Tabak Soya</span><span class="item-price">200₺</span></div><div class="item-desc">Soya soslu tavuk, kremalı pesto soslu makarna ve salata</div></div>
+    <div class="item"><div class="item-header"><span class="item-title">Tavuklu Tabak Köri</span><span class="item-price">200₺</span></div><div class="item-desc">Köri soslu tavuk, kremalı pesto soslu makarna ve salata</div></div>
+    <div class="item"><div class="item-header"><span class="item-title">Tavuklu Tabak Acılı 🔥</span><span class="item-price">200₺</span></div><div class="item-desc">Acı soslu tavuk, kremalı pesto soslu makarna ve salata</div></div>
+    <div class="item"><div class="item-header"><span class="item-title">Tavuklu Tabak Klasik</span><span class="item-price">200₺</span></div><div class="item-desc">Sade özel marinasyonlu tavuk, kremalı pesto soslu makarna ve salata</div></div>
+    <div class="item"><div class="item-header"><span class="item-title">Tavuklu Tabak Tatlı Ekşi</span><span class="item-price">200₺</span></div><div class="item-desc">Tatlı Ekşi soslu tavuk, kremalı pesto soslu makarna ve salata</div></div>
+    <div class="item"><div class="item-header"><span class="item-title">Tavuklu Tabak Mexican</span><span class="item-price">200₺</span></div><div class="item-desc">Mexican soslu tavuk, kremalı pesto soslu makarna ve salata</div></div>
+    <div class="item"><div class="item-header"><span class="item-title">Tavuklu Tabak Ballı Hardal</span><span class="item-price">200₺</span></div><div class="item-desc">Ballı Hardal soslu tavuk, kremalı pesto soslu makarna ve salata</div></div>
+    <div class="item"><div class="item-header"><span class="item-title">Tavuklu Tabak Sweet Chili</span><span class="item-price">200₺</span></div><div class="item-desc">Sweet Chili soslu tavuk, kremalı pesto soslu makarna ve salata</div></div>
+    
 
-    <h2>İÇECEKLER</h2>
+    <!-- BURGER -->
+    <h2 id="burger"><img src="tavuklutavuk.png"><span>BURGER</span></h2>
+    <div class="image-container"><img src="burger2.webp" alt="Burger"></div>&nbsp;
+    <div class="item"><div class="item-header"><span class="item-title">Tavuklu Burger</span><span class="item-price">200₺</span></div><div class="item-desc">Tavuklu burger, marul, domates, karamelize soğan, turşu, burger sos ve barbekü sos</div></div>
+    <div class="item"><div class="item-header"><span class="item-title">Tavuklu Cheddar Burger</span><span class="item-price">220₺</span></div><div class="item-desc">Tavuklu burger, marul, domates, karamelize soğan, turşu, burger sos, barbekü sos ve cheddar sosu</div></div>
+    <div class="item"><div class="item-header"><span class="item-title">Tavuklu Trüflü Mayonezli Burger</span><span class="item-price">220₺</span></div><div class="item-desc">Tavuklu burger, marul, domates, karamelize soğan, turşu ve trüflü mayonez</div></div>
+    
+
+    <!-- APERATİFLER -->
+    <h2 id="aperatif"><img src="tavuklutavuk.png"><span>APERATİFLER</span></h2>
+    <div class="image-container"><img src="citir.webp" alt="Çıtır Tabak"></div>&nbsp;
+    <div class="item"><div class="item-header"><span class="item-title">Çıtır Tavuklu Tabağı</span><span class="item-price">140₺</span></div><div class="item-desc">100 gram çıtır tavuk ve patates kızartması</div></div>
+    <div class="item single-line-item"><div class="item-header"><span class="item-title">Patates Kızartması</span><span class="item-price">75₺</span></div></div>
+    
+
+    <!-- İÇECEKLER -->
+    <h2 id="icecek"><img src="tavuklutavuk.png"><span>İÇECEKLER</span></h2>
     <div class="item single-line-item"><div class="item-header"><span class="item-title">Kutu Kola</span><span class="item-price">60₺</span></div></div>
-    <div class="item single-line-item"><div class="item-header"><span class="item-title">Şişe Kola</span><span class="item-price">40₺</span></div></div>
+    <div class="item single-line-item"><div class="item-header"><span class="item-title">Şişe Kola</span><span class="item-price">30₺</span></div></div>
     <div class="item single-line-item"><div class="item-header"><span class="item-title">Kutu Fanta</span><span class="item-price">60₺</span></div></div>
-    <div class="item single-line-item"><div class="item-header"><span class="item-title">Şişe Fanta</span><span class="item-price">40₺</span></div></div>
+    <div class="item single-line-item"><div class="item-header"><span class="item-title">Şişe Fanta</span><span class="item-price">30₺</span></div></div>
     <div class="item single-line-item"><div class="item-header"><span class="item-title">Kutu Sprite</span><span class="item-price">60₺</span></div></div>
     <div class="item single-line-item"><div class="item-header"><span class="item-title">Kutu Fuse Tea</span><span class="item-price">60₺</span></div></div>
     <div class="item single-line-item"><div class="item-header"><span class="item-title">Küçük Eker Ayran 170ml</span><span class="item-price">20₺</span></div></div>
     <div class="item single-line-item"><div class="item-header"><span class="item-title">Tombul Eker Ayran 293ml</span><span class="item-price">40₺</span></div></div>
     <div class="item single-line-item"><div class="item-header"><span class="item-title">Su</span><span class="item-price">20₺</span></div></div>
     <div class="item single-line-item"><div class="item-header"><span class="item-title">Maden Suyu</span><span class="item-price">15₺</span></div></div>
-    
+
+
     <footer>
-      <div class="footer-logo">
-        <img src="tavuklu.png" alt="Logo">
-      </div>
+      <div class="footer-logo"><img src="tavuklu.png" alt="Logo"></div>
       <div class="footer-info">
-        <div>Vıraca Mah. Benli Ahmet Sk. No:3/A Mustafakemalpaşa/BURSA</div>
+        <div>📍 Vıraca Mah. Benli Ahmet Sk. No:3/A Mustafakemalpaşa/BURSA</div>
         <div>(Güvenal ve Makbul Arası)</div>
-        <div class="phone">+90 531 370 95 74</div>
+        <p>
+            <a href="tel:+905313709574" class="phone-link">+90 531 370 95 74</a>
+        </p>
       </div>
     </footer>
   </div>
 
+  <script>
+    window.addEventListener('load', () => {
+      const loading = document.getElementById('loading');
+      const menu = document.querySelector('.menu-container');
+      setTimeout(() => {
+        loading.style.display = 'none';
+        menu.classList.add('show');
+        document.querySelectorAll('h2').forEach((h2, i) => {
+          setTimeout(() => h2.classList.add('show'), i * 700);
+        });
+      }, 1800);
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll('.item').forEach(it => it.classList.add('visible'));
+});
+
+    // Rastgele Menü
+    const ekmek = ["Tavuklu Ekmek Arası Teriyaki","Tavuklu Ekmek Arası Barbekü","Tavuklu Ekmek Arası Soya","Tavuklu Ekmek Arası Köri","Tavuklu Ekmek Arası Acılı","Tavuklu Ekmek Arası Çıtır","Tavuklu Ekmek Arası Klasik","Tavuklu Ekmek Arası Tatlı Ekşi","Tavuklu Ekmek Arası Mexican","Tavuklu Ekmek Arası Ballı Hardal","Tavuklu Ekmek Arası Sweet Chili"];
+    const tabak = ["Tavuklu Tabak Teriyaki","Tavuklu Tabak Barbekü","Tavuklu Tabak Soya","Tavuklu Tabak Köri","Tavuklu Tabak Acılı","Tavuklu Tabak Klasik","Tavuklu Tabak Tatlı Ekşi","Tavuklu Tabak Mexican","Tavuklu Tabak Ballı Hardal","Tavuklu Tabak Sweet Chili"];
+    const burger = ["Tavuklu Burger","Tavuklu Cheddar Burger","Tavuklu Trüflü Mayonezli Burger"];
+    const aperatif = ["Çıtır Tavuklu Tabağı","Patates Kızartması"];
+    const icecek = ["Kutu Kola","Şişe Kola","Kutu Fanta","Şişe Fanta","Kutu Sprite","Kutu Fuse Tea","Küçük Eker Ayran","Tombul Eker Ayran","Su","Maden Suyu"];
+
+    function pick(arr){ return arr[Math.floor(Math.random()*arr.length)] }
+
+    function todayMenu(){
+      let secim;
+      const rnd = Math.random();
+      if(rnd < 0.5){ secim = pick(ekmek); }
+      else if(rnd < 0.8){ secim = pick(tabak); }
+      else{ secim = pick(burger); }
+
+      let icecekSecim = pick(icecek);
+      let aperatifSecim = Math.random() < 0.5 ? " + " + pick(aperatif) : "";
+
+      return secim + " + " + icecekSecim + aperatifSecim;
+    }
+
+    document.addEventListener("DOMContentLoaded", ()=>{
+      document.querySelector("#randomMenu .item-title").innerText = todayMenu();
+    });
+
+
+    const menuBtn = document.getElementById('menu-btn');
+const fullscreenMenu = document.getElementById('fullscreen-menu');
+const closeBtn = document.querySelector('.close-btn');
+
+menuBtn.addEventListener('click', () => {
+  fullscreenMenu.classList.add('active');
+});
+
+closeBtn.addEventListener('click', () => {
+  fullscreenMenu.classList.remove('active');
+});
+
+document.querySelectorAll('#fullscreen-menu a').forEach(link => {
+  link.addEventListener('click', () => {
+    fullscreenMenu.classList.remove('active');
+  });
+});
+
+menuBtn.addEventListener('click', () => {
+  fullscreenMenu.classList.add('active');
+  menuBtn.style.display = "none";
+});
+
+closeBtn.addEventListener('click', () => {
+  fullscreenMenu.classList.remove('active');
+  menuBtn.style.display = "block";
+});
+
+document.querySelectorAll('#fullscreen-menu a').forEach(link => {
+  link.addEventListener('click', () => {
+    fullscreenMenu.classList.remove('active');
+    menuBtn.style.display = "block";
+  });
+});
+
+  </script>
 </body>
 </html>
