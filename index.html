@@ -1,478 +1,485 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <link rel="icon" href="ico.png" type="image/x-icon" />
-  <title>Tavuklu Menü</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <style>
-    :root{
-      --turuncu-1:#FF8A00;
-      --turuncu-2:#FF6A00;
-      --turuncu-3:#FFC107;
-      --bg-light:#FFF7EF;
-      --text:#3d3d3d;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aytaç Ünal</title>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-color: #050505;
+            --matrix-green: #00ff41;
+            --dark-green: #008f11;
+            --text-color: #e0e0e0;
+            --card-bg: rgba(0, 20, 0, 0.7);
+            --font-main: 'Fira Code', monospace;
+            --font-display: 'VT323', monospace;
+        }
 
-    *{box-sizing:border-box}
-    html,body{height:100%}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    body {
-      font-family: 'Poppins', sans-serif;
-      color: var(--text);
-      padding: 2rem;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      background: #ff9c2a;
-      background-attachment: fixed;
-      background-size: 140% 140%;
-      animation: bgShift 12s ease-in-out infinite alternate;
-    }
-    @keyframes bgShift{
-      0%{background-position: 0% 0%}
-      100%{background-position: 100% 100%}
-    }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--font-main);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
 
-    #loading {
-      position: fixed; inset:0;
-      background: linear-gradient(135deg, var(--turuncu-1), var(--turuncu-2));
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      z-index: 9999;
-    }
-    #loading img { width: 280px; animation: skate 0.5s infinite alternate ease-in-out; }
-    @keyframes skate { 0% { transform: translateX(-10px) rotate(-2deg); } 100% { transform: translateX(10px) rotate(2deg); } }
-    #loading p { margin-top: 18px; font-size: 1.1rem; font-weight: 800; color: #fff; letter-spacing: .5px; text-shadow: 0 0 8px #FFD54F, 0 0 14px rgba(255,255,255,.6); animation: neonBlink 1.6s infinite; }
-    @keyframes neonBlink{0%,19%,21%,23%,80%,100%{opacity:1} 20%,22%{opacity:.3} 81%{opacity:.6}}
+        /* --- MATRIX RAIN BACKGROUND --- */
+        #matrix-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            opacity: 0.15; /* Subtle effect */
+        }
 
-    .menu-container {
-      max-width: 920px; width: 100%;
-      background: rgb(255, 241, 224);
-      padding: 2rem 2.2rem;
-      border-radius: 3px;
-      opacity: 0; transform: translateY(24px);
-      transition: all .8s ease;
-      backdrop-filter: blur(2px);
-    }
-    .menu-container.show{ opacity:1; transform: translateY(0); }
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, transparent 0%, var(--bg-color) 90%);
+            z-index: -1;
+            pointer-events: none;
+        }
 
-    .logo-container { text-align:center; margin-bottom: 1.4rem; }
-    .logo-container img { width: 280px;}
+        /* --- LAYOUT & TYPOGRAPHY --- */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 1;
+        }
 
-    h2 {
-      font-size: 2rem; font-weight: 900; text-align:center;
-      color: var(--turuncu-1);
-      padding-bottom: .8rem; margin-top: 2.6rem; margin-bottom: 1.6rem;
-      position: relative; overflow: visible;
-      border-bottom: 3px dashed rgba(255,122,0,.35);
-    }
-    h2 span { display:inline-block; opacity:0; transform: translateY(8px); transition: all .5s ease; }
-    h2 img { position:absolute; left:-110px; top:50%; transform: translateY(-50%); width:80px; z-index:2; }
-    h2.show img { animation: chicken-smooth 2.2s cubic-bezier(.25,1.25,.5,1) forwards; }
-    @keyframes chicken-smooth{0%{left:-110px; transform: translateY(-50%) scale(1)} 70%{left:85%; transform: translateY(-55%) scale(1.06)} 100%{left:85%; transform: translateY(-40%) scale(.9)} }
-    h2.show span { opacity:1; transform: translateY(0); transition-delay: .25s; }
+        h1, h2, h3 {
+            font-family: var(--font-display);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
 
-    .item{ position:relative; margin-bottom: 1.4rem; padding: .9rem 1rem; border-radius: 14px; background: var(--bg-light);
-      box-shadow: 0 2px 10px rgba(0,0,0,.05);
-      border: 2px solid rgba(255,138,0,.12);
-      overflow:hidden;
-      opacity:0; transform: translateY(20px);
-    }
-    .item::before{
-      content:""; position:absolute; inset:-2px; border-radius: 16px;
-      background: radial-gradient(120px 60px at 10% 0%, rgba(255,200,120,.45), transparent 60%),
-                  radial-gradient(120px 60px at 90% 100%, rgba(255,120,0,.35), transparent 60%);
-      pointer-events:none; opacity:.0; transition: opacity .25s ease;
-    }
-    .item:hover{ transform: translateY(-2px) scale(1.01); box-shadow: 0 10px 24px rgba(255,138,0,.22); border-color: rgba(255,138,0,.35); }
-    .item:hover::before{ opacity:.9 }
-    .item.visible{ opacity:1; transform: translateY(0); }
+        h2 {
+            font-size: 3rem;
+            color: var(--matrix-green);
+            margin-bottom: 2rem;
+            text-shadow: 0 0 10px rgba(0, 255, 65, 0.5);
+            border-bottom: 1px solid var(--dark-green);
+            display: inline-block;
+            padding-right: 20px;
+        }
 
-    .item-header{ display:flex; justify-content: space-between; align-items:center; gap:.8rem;}
-    .item-title{ font-weight:800; font-size:1.14rem; color:#FF7A00; letter-spacing:.2px; }
+        section {
+            padding: 80px 0;
+        }
 
-    .item-price{ font-size:1.08rem; font-weight:900; color:#fff; background: linear-gradient(135deg, var(--turuncu-1), var(--turuncu-2));
-      padding: .35rem .8rem; border-radius: 999px; white-space:nowrap; margin-left:auto;
-      box-shadow: 0 0 10px rgba(255,165,0,.7), 0 0 20px rgba(255,165,0,.55);
-      transform: rotate(-2deg);
-    }
+        /* --- HERO SECTION --- */
+        #hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+        }
 
-    .item-desc{ font-size:.95rem; color:#5b5b5b; margin-top:.35rem; max-width: 90%; }
+        .glitch-wrapper {
+            position: relative;
+        }
 
-    .image-container{ margin-top:1.4rem; border-radius:16px; overflow:hidden; box-shadow: 0 12px 28px rgba(0,0,0,.12); }
-    .image-container img{ width:100%; display:block; transition: transform .5s ease; }
-    .image-container:hover img{ transform: scale(1.04); }
+        .hero-title {
+            font-size: 5rem;
+            color: white;
+            font-weight: bold;
+            position: relative;
+            margin-bottom: 10px;
+        }
 
-    .single-line-item .item-header{ align-items:center; }
+        /* Glitch Animation CSS */
+        .hero-title::before, .hero-title::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-color);
+        }
 
-    footer{ margin-top: 3rem; margin-bottom: 100px; padding: 1.6rem 1rem; color:#000000; border-radius: 0 0 18px 18px; text-align:center; }
-    .footer-logo img{ width:170px; margin-bottom:.6rem; filter: drop-shadow(0 0 10px rgba(255,200,120,.5)); }
-    .footer-info div{ margin-bottom:.35rem; }
+        .hero-title::before {
+            left: 2px;
+            text-shadow: -1px 0 red;
+            clip: rect(24px, 550px, 90px, 0);
+            animation: glitch-anim-2 3s infinite linear alternate-reverse;
+        }
 
-    /* 🔥 Özel Kutu Tasarımı */
-    .special-box {
-      background: linear-gradient(135deg, #FF8A00, #FF3D00);
-      color: #fff;
-      border-radius: 16px;
-      padding: 1.2rem;
-      margin-bottom: 1.5rem;
-      box-shadow: 0 0 15px rgba(0,0,0,.2);
-      text-align: center;
-    }
-    .special-box .title {
-      font-size: 1.4rem;
-      font-weight: 900;
-      margin-bottom: .8rem;
-    }
-    .special-box .content {
-      font-size: 1.1rem;
-      font-weight: 600;
-    }
+        .hero-title::after {
+            left: -2px;
+            text-shadow: -1px 0 blue;
+            clip: rect(85px, 550px, 140px, 0);
+            animation: glitch-anim 2.5s infinite linear alternate-reverse;
+        }
 
-    .phone-link {
-    text-decoration: none;
-    color: inherit;
-    font-weight: bold;
-    }
+        .tagline {
+            font-size: 1.5rem;
+            color: var(--matrix-green);
+            border-right: 2px solid var(--matrix-green);
+            white-space: nowrap;
+            overflow: hidden;
+            width: 0; 
+            animation: blink-cursor 0.75s step-end infinite;
+        }
 
-    .phone-link:hover {
-    color: #ff5e00;
-    cursor: pointer;
-    }
+        /* --- ABOUT SECTION --- */
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 40px;
+            align-items: center;
+        }
 
-    @media (max-width: 560px){
-      body{ padding: 1rem; }
-      .menu-container{ padding: 1.2rem }
-      h2{ font-size: 1.7rem }
-      h2 img{ left:-86px; width:64px }
-    }
+        .profile-card {
+            border: 1px solid var(--matrix-green);
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.2);
+            background: var(--card-bg);
+        }
 
+        .profile-pic-placeholder {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: #000;
+            border: 2px solid var(--matrix-green);
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: var(--matrix-green);
+        }
 
-    #menu-btn {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: linear-gradient(135deg, #FF8A00, #FF3D00);
-  color: #fff;
-  font-size: 1.6rem;
-  border: none;
-  border-radius: 50%;
-  width: 60px;
-  height: 60px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.25);
-  cursor: pointer;
-  z-index: 10001;
-}
+        .bio-text p {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+        }
 
-#fullscreen-menu {
-  position: fixed;
-  inset: 0;
-  background: rgba(255, 255, 255, 0.98);
-  display: none;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  z-index: 10000;
-}
+        /* --- SERVICES / WORKS --- */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
 
-#fullscreen-menu.active {
-  display: flex;
-  animation: fadeIn .4s ease forwards;
-}
+        .service-card {
+            background: var(--card-bg);
+            border: 1px solid var(--dark-green);
+            padding: 30px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
 
-#fullscreen-menu .menu-content ul {
-  list-style: none;
-  padding: 0;
-  text-align: center;
-}
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 2px;
+            background: var(--matrix-green);
+            transition: 0.5s;
+        }
 
-#fullscreen-menu .menu-content ul li {
-  margin: 1.2rem 0;
-}
+        .service-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--matrix-green);
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.3);
+        }
 
-#fullscreen-menu .menu-content ul li a {
-  font-size: 2rem;
-  font-weight: 700;
-  color: #FF6A00;
-  text-decoration: none;
-}
+        .service-card:hover::before {
+            left: 0;
+        }
 
-#fullscreen-menu .menu-content ul li a:hover {
-  color: #FF3D00;
-}
+        .service-icon {
+            font-size: 2.5rem;
+            color: var(--matrix-green);
+            margin-bottom: 15px;
+        }
 
-.close-btn {
-  position: absolute;
-  top: 20px;
-  right: 30px;
-  font-size: 2.5rem;
-  cursor: pointer;
-  color: #FF6A00;
-}
+        .service-title {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: white;
+            font-family: var(--font-display);
+        }
 
-.menu-logo {
-  width: 100%;
-  text-align: center;
-  margin-bottom: 2rem;
-  margin-top: 3rem;
-}
+        /* --- CONTACT & FOOTER --- */
+        .contact-box {
+            border: 1px dashed var(--dark-green);
+            padding: 40px;
+            text-align: center;
+            background: rgba(0,0,0,0.8);
+        }
 
+        .contact-info a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 1.2rem;
+            margin: 0 15px;
+            transition: 0.3s;
+        }
 
-  .menu-logo img {
-  width: 200px;
-  max-width: 70%;
-  display: inline-block;
-}
+        .contact-info a:hover {
+            color: var(--matrix-green);
+            text-shadow: 0 0 8px var(--matrix-green);
+        }
 
-#fullscreen-menu.active + #menu-btn {
-  display: none;
-}
+        .social-links {
+            margin-top: 30px;
+        }
 
-@keyframes fadeIn {
-  from {opacity: 0;}
-  to {opacity: 1;}
-}
+        .social-btn {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            line-height: 50px;
+            border: 1px solid var(--matrix-green);
+            color: var(--matrix-green);
+            font-size: 1.5rem;
+            margin: 0 10px;
+            transition: 0.4s;
+            text-align: center;
+        }
 
+        .social-btn:hover {
+            background: var(--matrix-green);
+            color: black;
+            box-shadow: 0 0 20px var(--matrix-green);
+        }
 
-.footer-social {
-  margin-top: 1.2rem;
-}
+        footer {
+            text-align: center;
+            padding: 40px 0;
+            border-top: 1px solid var(--dark-green);
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
 
-.footer-social a {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  text-decoration: none;
-  color: #E4405F; /* Instagram rengi */
-  font-weight: 700;
-  font-size: 1.1rem;
-}
+        /* --- ANIMATIONS --- */
+        @keyframes glitch-anim {
+            0% { clip: rect(30px, 9999px, 10px, 0); }
+            20% { clip: rect(80px, 9999px, 90px, 0); }
+            40% { clip: rect(10px, 9999px, 50px, 0); }
+            60% { clip: rect(60px, 9999px, 20px, 0); }
+            80% { clip: rect(10px, 9999px, 80px, 0); }
+            100% { clip: rect(70px, 9999px, 50px, 0); }
+        }
 
-.footer-social a img {
-  width: 28px;
-  height: 28px;
-  filter: drop-shadow(0 0 6px rgba(228, 64, 95, 0.4));
-  transition: transform 0.3s ease;
-}
+        @keyframes glitch-anim-2 {
+            0% { clip: rect(10px, 9999px, 80px, 0); }
+            20% { clip: rect(60px, 9999px, 10px, 0); }
+            40% { clip: rect(30px, 9999px, 90px, 0); }
+            60% { clip: rect(80px, 9999px, 20px, 0); }
+            80% { clip: rect(20px, 9999px, 60px, 0); }
+            100% { clip: rect(50px, 9999px, 30px, 0); }
+        }
 
-.footer-social a:hover img {
-  transform: scale(1.15);
-}
+        @keyframes blink-cursor {
+            from, to { border-color: transparent; }
+            50% { border-color: var(--matrix-green); }
+        }
 
-  </style>
+        /* --- MOBILE --- */
+        @media (max-width: 768px) {
+            .hero-title { font-size: 3rem; }
+            .about-grid { grid-template-columns: 1fr; }
+            .tagline { font-size: 1.1rem; }
+        }
+    </style>
 </head>
 <body>
 
-  <div id="loading">
-    <img src="tavuklutavuk.png" alt="Yükleniyor">
-    <p>Acıktıysan... tavuklu ye!</p>
-  </div>
+    <canvas id="matrix-canvas"></canvas>
+    <div class="overlay"></div>
 
-  <button id="menu-btn">☰</button>
+    <main class="container">
+        
+        <section id="hero">
+            <div class="glitch-wrapper">
+                <h1 class="hero-title" data-text="AYTAÇ">AYTAÇ ÜNAL</h1>
+            </div>
+            <p id="typewriter" class="tagline"></p>
+        </section>
 
-<div id="fullscreen-menu">
-  <div class="menu-content">
-    <span class="close-btn">&times;</span>
-    <div class="menu-logo">
-      <img src="tavuklu.png" alt="Logo">
-    </div>
-    <ul>
-      <li><a href="#ekmek">🥪 Ekmek Arası</a></li>
-      <li><a href="#tabak">🍽️ Tabak</a></li>
-      <li><a href="#burger">🍔 Burger</a></li>
-      <li><a href="#aperatif">🍟 Aperatifler</a></li>
-      <li><a href="#icecek">🥤 İçecekler</a></li>
-    </ul>
-  </div>
-</div>
+        <section id="about">
+            <h2>// SYSTEM_IDENTITY</h2>
+            <div class="about-grid">
+                <div class="profile-card">
+                    <div class="profile-pic-placeholder">
+                        <i class="fa-solid fa-user-astronaut"></i>
+                    </div>
+                    <h3>Aytaç Ünal</h3>
+                    <p style="color: #888;">Computer Technician</p>
+                </div>
+                <div class="bio-text">
+                    <p>
+                        <span style="color: var(--matrix-green);">> Initializing bio...</span><br>
+                        I am a Full Stack Developer and Creative Technologist specializing in building immersive digital experiences. I don't just write code; I architect systems.
+                    </p>
+                    <p>
+                        My background merges high-performance game development principles with modern web technologies. From optimizing competitive gaming environments to designing sleek, efficient web applications, I focus on the details that others miss.
+                    </p>
+                    <p>
+                        <span style="color: var(--matrix-green);">> Current Status:</span> Online & Ready for Deployment.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section id="services">
+            <h2>// LOAD_MODULES</h2>
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-icon"><i class="fa-solid fa-code"></i></div>
+                    <h3 class="service-title">Web Development</h3>
+                    <p>High-performance HTML/CSS/JS and React Native applications. Clean architecture with a focus on scalability.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon"><i class="fa-solid fa-gamepad"></i></div>
+                    <h3 class="service-title">Game Logic</h3>
+                    <p>Experience with game mechanics, idle systems, and immersive interaction design (WebGL, Canvas, UE5).</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon"><i class="fa-solid fa-eye"></i></div>
+                    <h3 class="service-title">Visual Design</h3>
+                    <p>Cyberpunk aesthetics, logo design, and branding materials that stand out in a saturated market.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon"><i class="fa-solid fa-bug"></i></div>
+                    <h3 class="service-title">Optimization</h3>
+                    <p>Debugging complex systems, reducing latency, and ensuring smooth performance across devices.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact">
+            <h2>// ESTABLISH_UPLINK</h2>
+            <div class="contact-box">
+                <p style="margin-bottom: 20px; font-size: 1.2rem;">Ready to jack in? Send a signal.</p>
+                
+                <div class="contact-info">
+                    <a href="mailto:aytac@nfinity.com"><i class="fa-solid fa-envelope"></i> nf.aytacunal@gmail.com</a>
+                    <a href="#"><i class="fa-solid fa-phone"></i> +90 506 096 14 07</a>
+                    <a href="#"><i class="fa-solid fa-location-dot"></i> Türkiye</a>
+                </div>
+
+                <div class="social-links">
+                    <a href="https://github.com/aytacunalx" class="social-btn"><i class="fa-brands fa-github"></i></a>
+                    <a href="https://www.linkedin.com/in/aytac-unal-13156ea/" class="social-btn"><i class="fa-brands fa-linkedin-in"></i></a>
+                    <a href="https://www.instagram.com/aytacunalx/" class="social-btn"><i class="fa-brands fa-instagram"></i></a>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <p>&copy; All rights reserved.</p>
+            <p style="color: var(--matrix-green); margin-top: 10px;">"Wake up, Neo."</p>
+        </footer>
+
+    </main>
+
+    <script>
+        // --- TYPEWRITER EFFECT ---
+        const text = "Digital Architect // Web & Game Developer";
+        const typewriterElement = document.getElementById('typewriter');
+        let index = 0;
+
+        function typeWriter() {
+            if (index < text.length) {
+                typewriterElement.innerHTML += text.charAt(index);
+                index++;
+                // Slight random variation to simulate human typing
+                setTimeout(typeWriter, Math.random() * 100 + 50); 
+            } else {
+                // Remove cursor blink effect via styling width after typing
+                typewriterElement.style.width = 'auto';
+            }
+        }
+
+        // Start typing after a short delay
+        setTimeout(typeWriter, 1000);
 
 
+        // --- MATRIX RAIN ANIMATION ---
+        const canvas = document.getElementById('matrix-canvas');
+        const ctx = canvas.getContext('2d');
 
+        // Set canvas to full screen
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
 
+        // Characters to use (Katakana + Latin + Numbers)
+        const katakana = 'アァカサタナハマヤャラワガザダバパイィキシチニヒミリヂビピウゥクスツヌフムユュルグズブヅプエェケセテネヘメレゲゼデベペオォコソトノホモヨョロヲゴゾドボポヴッン';
+        const latin = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        const nums = '0123456789';
+        const alphabet = katakana + latin + nums;
 
-  <div class="menu-container">
-    <div class="logo-container">
-      <img src="tavuklu.png" alt="Tavuklu Logo">
-    </div>
+        const fontSize = 16;
+        const columns = canvas.width / fontSize;
 
-    <!-- EN ÇOK TERCIH EDILENLER -->
-    <h2><span>⭐ EN ÇOK TERCİH EDİLENLER</span></h2>
-    <div class="item"><div class="item-header"><span class="item-title">Tavuklu Ekmek Arası Köri</span><span class="item-price">120₺</span></div></div>
-    <div class="item"><div class="item-header"><span class="item-title">Tavuklu Tabak Köri</span><span class="item-price">220₺</span></div></div>
-    <div class="item"><div class="item-header"><span class="item-title">Tavuklu Tabak Barbekü</span><span class="item-price">220₺</span></div></div>
-    <div class="item"><div class="item-header"><span class="item-title">Tavuklu Tabak Teriyaki</span><span class="item-price">220₺</span></div></div>
-    <div class="item"><div class="item-header"><span class="item-title">Çıtır Tavuklu Tabağı</span><span class="item-price">150₺</span></div></div>
+        // Array of drops - one per column
+        const drops = [];
+        for (let x = 0; x < columns; x++) {
+            drops[x] = 1; 
+        }
 
-    <!-- BUGÜN NE YESEN -->
-    <h2><img src="tavuklutavuk.png"><span>🍴BUGÜN NE YESEN?</span></h2>
-    <div class="item" id="randomMenu">
-      <div class="item-header"><span class="item-title">Yükleniyor...</span></div>
-    </div>
-    
+        function draw() {
+            // Black BG for the canvas
+            // Translucent BG to show trail
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    <!-- EKMEK ARASI -->
-    <h2 id="ekmek"><img src="tavuklutavuk.png"><span>EKMEK ARASI</span></h2>
-    <div class="image-container"><img src="ekmek.webp" alt="Ekmek Arası"></div>&nbsp;
-    <div class="item"><div class="item-header"><span class="item-title">Tavuklu Teriyaki</span><span class="item-price">120₺</span></div><div class="item-desc">Teriyaki soslu tavuk, marul, domates, turşu, karamelize soğan, pide ekmeği</div></div>
-    <div class="item"><div class="item-header"><span class="item-title">Tavuklu Barbekü</span><span class="item-price">120₺</span></div><div class="item-desc">Barbekü soslu tavuk, marul, domates, turşu, karamelize soğan, pide ekmeği</div></div>
-    <div class="item"><div class="item-header"><span class="item-title">Tavuklu Soya</span><span class="item-price">120₺</span></div><div class="item-desc">Soya soslu tavuk, marul, domates, turşu, karamelize soğan, pide ekmeği</div></div>
-    <div class="item"><div class="item-header"><span class="item-title">Tavuklu Köri</span><span class="item-price">120₺</span></div><div class="item-desc">Köri soslu tavuk, marul, domates, turşu, karamelize soğan, pide ekmeği</div></div>
-    <div class="item"><div class="item-header"><span class="item-title">Tavuklu Acılı 🔥</span><span class="item-price">120₺</span></div><div class="item-desc">Acı soslu tavuk, marul, domates, turşu, karamelize soğan, pide ekmeği</div></div>
-    <div class="item"><div class="item-header"><span class="item-title">Tavuklu Çıtır</span><span class="item-price">120₺</span></div><div class="item-desc">Çıtır tavuk, marul, domates, turşu, karamelize soğan, pide ekmeği</div></div>
-    <div class="item"><div class="item-header"><span class="item-title">Tavuklu Klasik</span><span class="item-price">120₺</span></div><div class="item-desc">Sade özel marinasyonlu tavuk, marul, domates, turşu, karamelize soğan, pide ekmeği</div></div>
-    <div class="item"><div class="item-header"><span class="item-title">Tavuklu Tatlı Ekşi</span><span class="item-price">120₺</span></div><div class="item-desc">Tatlı ekşi soslu tavuk, marul, domates, turşu, karamelize soğan, pide ekmeği</div></div>
-    <div class="item"><div class="item-header"><span class="item-title">Tavuklu Mexican</span><span class="item-price">120₺</span></div><div class="item-desc">Mexican soslu tavuk, marul, domates, turşu, karamelize soğan, pide ekmeği</div></div>
-    <div class="item"><div class="item-header"><span class="item-title">Tavuklu Ballı Hardal</span><span class="item-price">120₺</span></div><div class="item-desc">Ballı Hardal soslu tavuk, marul, domates, turşu, karamelize soğan, pide ekmeği</div></div>
-    <div class="item"><div class="item-header"><span class="item-title">Tavuklu Sweet Chili</span><span class="item-price">120₺</span></div><div class="item-desc">Sweet Chili soslu tavuk, marul, domates, turşu, karamelize soğan, pide ekmeği</div></div>
+            ctx.fillStyle = '#0F0'; // Green text
+            ctx.font = fontSize + 'px monospace';
 
+            // Loop over drops
+            for (let i = 0; i < drops.length; i++) {
+                const text = alphabet.charAt(Math.floor(Math.random() * alphabet.length));
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
 
-    <!-- TABAK -->
-    <h2 id="tabak"><img src="tavuklutavuk.png"><span>TABAK</span></h2>
-    <div class="image-container"><img src="tabak2.webp" alt="Tabak Tavuklu"></div>&nbsp;
-    <div class="item"><div class="item-header"><span class="item-title">Tavuklu Tabak Teriyaki</span><span class="item-price">220₺</span></div><div class="item-desc">Teriyaki soslu tavuk, kremalı pesto soslu makarna ve salata</div></div>
-    <div class="item"><div class="item-header"><span class="item-title">Tavuklu Tabak Barbekü</span><span class="item-price">220₺</span></div><div class="item-desc">Barbekü soslu tavuk, kremalı pesto soslu makarna ve salata</div></div>
-    <div class="item"><div class="item-header"><span class="item-title">Tavuklu Tabak Soya</span><span class="item-price">220₺</span></div><div class="item-desc">Soya soslu tavuk, kremalı pesto soslu makarna ve salata</div></div>
-    <div class="item"><div class="item-header"><span class="item-title">Tavuklu Tabak Köri</span><span class="item-price">220₺</span></div><div class="item-desc">Köri soslu tavuk, kremalı pesto soslu makarna ve salata</div></div>
-    <div class="item"><div class="item-header"><span class="item-title">Tavuklu Tabak Acılı 🔥</span><span class="item-price">220₺</span></div><div class="item-desc">Acı soslu tavuk, kremalı pesto soslu makarna ve salata</div></div>
-    <div class="item"><div class="item-header"><span class="item-title">Tavuklu Tabak Klasik</span><span class="item-price">220₺</span></div><div class="item-desc">Sade özel marinasyonlu tavuk, kremalı pesto soslu makarna ve salata</div></div>
-    <div class="item"><div class="item-header"><span class="item-title">Tavuklu Tabak Tatlı Ekşi</span><span class="item-price">220₺</span></div><div class="item-desc">Tatlı Ekşi soslu tavuk, kremalı pesto soslu makarna ve salata</div></div>
-    <div class="item"><div class="item-header"><span class="item-title">Tavuklu Tabak Mexican</span><span class="item-price">220₺</span></div><div class="item-desc">Mexican soslu tavuk, kremalı pesto soslu makarna ve salata</div></div>
-    <div class="item"><div class="item-header"><span class="item-title">Tavuklu Tabak Ballı Hardal</span><span class="item-price">220₺</span></div><div class="item-desc">Ballı Hardal soslu tavuk, kremalı pesto soslu makarna ve salata</div></div>
-    <div class="item"><div class="item-header"><span class="item-title">Tavuklu Tabak Sweet Chili</span><span class="item-price">220₺</span></div><div class="item-desc">Sweet Chili soslu tavuk, kremalı pesto soslu makarna ve salata</div></div>
-    
+                // Sending the drop back to the top randomly after it has crossed the screen
+                // Adding a randomness to the reset to make the drops scattered on the Y axis
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
 
-    <!-- BURGER -->
-    <h2 id="burger"><img src="tavuklutavuk.png"><span>BURGER</span></h2>
-    <div class="image-container"><img src="burger2.webp" alt="Burger"></div>&nbsp;
-    <div class="item"><div class="item-header"><span class="item-title">Tavuklu Burger</span><span class="item-price">200₺</span></div><div class="item-desc">Tavuklu burger, marul, domates, karamelize soğan, turşu, burger sos ve barbekü sos</div></div>
-    <div class="item"><div class="item-header"><span class="item-title">Tavuklu Cheddar Burger</span><span class="item-price">220₺</span></div><div class="item-desc">Tavuklu burger, marul, domates, karamelize soğan, turşu, burger sos, barbekü sos ve cheddar sosu</div></div>
-    <div class="item"><div class="item-header"><span class="item-title">Tavuklu Trüflü Mayonezli Burger</span><span class="item-price">220₺</span></div><div class="item-desc">Tavuklu burger, marul, domates, karamelize soğan, turşu ve trüflü mayonez</div></div>
-    
+                // Incrementing Y coordinate
+                drops[i]++;
+            }
+        }
 
-    <!-- APERATİFLER -->
-    <h2 id="aperatif"><img src="tavuklutavuk.png"><span>APERATİFLER</span></h2>
-    <div class="image-container"><img src="citir.webp" alt="Çıtır Tabak"></div>&nbsp;
-    <div class="item"><div class="item-header"><span class="item-title">Çıtır Tavuklu Tabağı</span><span class="item-price">150₺</span></div><div class="item-desc">100 gram çıtır tavuk ve patates kızartması</div></div>
-    <div class="item single-line-item"><div class="item-header"><span class="item-title">Patates Kızartması</span><span class="item-price">75₺</span></div></div>
-    
+        setInterval(draw, 30);
 
-    <!-- İÇECEKLER -->
-    <h2 id="icecek"><img src="tavuklutavuk.png"><span>İÇECEKLER</span></h2>
-    <div class="item single-line-item"><div class="item-header"><span class="item-title">Kutu Kola</span><span class="item-price">60₺</span></div></div>
-    <div class="item single-line-item"><div class="item-header"><span class="item-title">Şişe Kola</span><span class="item-price">40₺</span></div></div>
-    <div class="item single-line-item"><div class="item-header"><span class="item-title">Kutu Fanta</span><span class="item-price">60₺</span></div></div>
-    <div class="item single-line-item"><div class="item-header"><span class="item-title">Şişe Fanta</span><span class="item-price">40₺</span></div></div>
-    <div class="item single-line-item"><div class="item-header"><span class="item-title">Kutu Sprite</span><span class="item-price">60₺</span></div></div>
-    <div class="item single-line-item"><div class="item-header"><span class="item-title">Kutu Fuse Tea</span><span class="item-price">60₺</span></div></div>
-    <div class="item single-line-item"><div class="item-header"><span class="item-title">Küçük Eker Ayran 170ml</span><span class="item-price">20₺</span></div></div>
-    <div class="item single-line-item"><div class="item-header"><span class="item-title">Tombul Eker Ayran 293ml</span><span class="item-price">45₺</span></div></div>
-    <div class="item single-line-item"><div class="item-header"><span class="item-title">Su</span><span class="item-price">20₺</span></div></div>
-    <div class="item single-line-item"><div class="item-header"><span class="item-title">Maden Suyu</span><span class="item-price">15₺</span></div></div>
-
-
-    <footer>
-      <div class="footer-logo"><img src="tavuklu.png" alt="Logo"></div>
-      <div class="footer-info">
-        <div>📍 Vıraca Mah. Benli Ahmet Sk. No:3/A Mustafakemalpaşa/BURSA</div>
-        <div>(Güvenal ve Makbul Arası)</div>
-        <p>
-            <a href="tel:+905313709574" class="phone-link">+90 531 370 95 74</a>
-        </p>
-      </div>
-
-      <!-- Instagram Alanı -->
-  <div class="footer-social">
-    <a href="https://www.instagram.com/tavuklu.tr" target="_blank" class="instagram-link">
-      <img src="instagram.png" alt="Instagram" />
-      <span>@tavuklu.tr</span>
-    </a>
-  </div>
-    </footer>
-  </div>
-
-  <script>
-    window.addEventListener('load', () => {
-      const loading = document.getElementById('loading');
-      const menu = document.querySelector('.menu-container');
-      setTimeout(() => {
-        loading.style.display = 'none';
-        menu.classList.add('show');
-        document.querySelectorAll('h2').forEach((h2, i) => {
-          setTimeout(() => h2.classList.add('show'), i * 700);
+        // Handle Window Resize
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            // Re-calculate columns
+            const newCols = canvas.width / fontSize;
+            drops.length = 0;
+            for(let x=0; x < newCols; x++) drops[x] = 1;
         });
-      }, 1800);
-    });
-
-    document.addEventListener("DOMContentLoaded", () => {
-  document.querySelectorAll('.item').forEach(it => it.classList.add('visible'));
-});
-
-    // Rastgele Menü
-    const ekmek = ["Tavuklu Ekmek Arası Teriyaki","Tavuklu Ekmek Arası Barbekü","Tavuklu Ekmek Arası Soya","Tavuklu Ekmek Arası Köri","Tavuklu Ekmek Arası Acılı","Tavuklu Ekmek Arası Çıtır","Tavuklu Ekmek Arası Klasik","Tavuklu Ekmek Arası Tatlı Ekşi","Tavuklu Ekmek Arası Mexican","Tavuklu Ekmek Arası Ballı Hardal","Tavuklu Ekmek Arası Sweet Chili"];
-    const tabak = ["Tavuklu Tabak Teriyaki","Tavuklu Tabak Barbekü","Tavuklu Tabak Soya","Tavuklu Tabak Köri","Tavuklu Tabak Acılı","Tavuklu Tabak Klasik","Tavuklu Tabak Tatlı Ekşi","Tavuklu Tabak Mexican","Tavuklu Tabak Ballı Hardal","Tavuklu Tabak Sweet Chili"];
-    const burger = ["Tavuklu Burger","Tavuklu Cheddar Burger","Tavuklu Trüflü Mayonezli Burger"];
-    const aperatif = ["Çıtır Tavuklu Tabağı","Patates Kızartması"];
-    const icecek = ["Kutu Kola","Şişe Kola","Kutu Fanta","Şişe Fanta","Kutu Sprite","Kutu Fuse Tea","Küçük Eker Ayran","Tombul Eker Ayran","Su","Maden Suyu"];
-
-    function pick(arr){ return arr[Math.floor(Math.random()*arr.length)] }
-
-    function todayMenu(){
-      let secim;
-      const rnd = Math.random();
-      if(rnd < 0.5){ secim = pick(ekmek); }
-      else if(rnd < 0.8){ secim = pick(tabak); }
-      else{ secim = pick(burger); }
-
-      let icecekSecim = pick(icecek);
-      let aperatifSecim = Math.random() < 0.5 ? " + " + pick(aperatif) : "";
-
-      return secim + " + " + icecekSecim + aperatifSecim;
-    }
-
-    document.addEventListener("DOMContentLoaded", ()=>{
-      document.querySelector("#randomMenu .item-title").innerText = todayMenu();
-    });
-
-
-    const menuBtn = document.getElementById('menu-btn');
-const fullscreenMenu = document.getElementById('fullscreen-menu');
-const closeBtn = document.querySelector('.close-btn');
-
-menuBtn.addEventListener('click', () => {
-  fullscreenMenu.classList.add('active');
-});
-
-closeBtn.addEventListener('click', () => {
-  fullscreenMenu.classList.remove('active');
-});
-
-document.querySelectorAll('#fullscreen-menu a').forEach(link => {
-  link.addEventListener('click', () => {
-    fullscreenMenu.classList.remove('active');
-  });
-});
-
-menuBtn.addEventListener('click', () => {
-  fullscreenMenu.classList.add('active');
-  menuBtn.style.display = "none";
-});
-
-closeBtn.addEventListener('click', () => {
-  fullscreenMenu.classList.remove('active');
-  menuBtn.style.display = "block";
-});
-
-document.querySelectorAll('#fullscreen-menu a').forEach(link => {
-  link.addEventListener('click', () => {
-    fullscreenMenu.classList.remove('active');
-    menuBtn.style.display = "block";
-  });
-});
-
-  </script>
+    </script>
 </body>
 </html>
